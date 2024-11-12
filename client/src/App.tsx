@@ -55,19 +55,18 @@ const App: React.FC = () => {
 
   const fetchChannels = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/channels'); // Adjust this endpoint as needed
+      const response = await fetch('http://localhost:3001/api/channels');
       if (!response.ok) throw new Error('Failed to fetch channels');
       const data = await response.json();
       const channelNames = data.map(
         (channel: { name: string }) => channel.name,
-      ); // Assuming data contains an array of channels with a name property
+      );
 
-      setChannels(channelNames); // Set the channels state
+      setChannels(channelNames);
 
-      // Automatically join the first channel if it exists
       if (channelNames.length > 0) {
-        setCurrentChannel(channelNames[0]); // Set current channel to the first one
-        socket.emit('joinChannel', channelNames[0]); // Join the first channel on load
+        setCurrentChannel(channelNames[0]);
+        socket.emit('joinChannel', channelNames[0]);
       }
     } catch (error) {
       console.error('Error fetching channels:', error);
