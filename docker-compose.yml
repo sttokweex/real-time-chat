@@ -1,0 +1,58 @@
+version: '3.8'  # Optional, but can be included for clarity
+
+services:
+  some-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pg_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: kirill-kent2006@mail.ru
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - pg_network
+
+  server:
+    build: 
+      context: ./server  # Path to your server directory
+      dockerfile: Dockerfile  # Name of your Dockerfile for the server
+    container_name: server-chat
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server:/usr/src/app  # Ensure this matches WORKDIR in Dockerfile 
+    networks:
+      - pg_network  
+
+  client:
+    build: 
+      context: ./client  # Path to your client directory
+      dockerfile: Dockerfile  # Name of your Dockerfile for the client
+    container_name: client-chat
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./client:/app 
+      - /app/node_modules  # Ensure this is necessary for your setup; consider using named volumes instead.
+    environment:
+      - VITE_DEV_PORT=http://localhost:3001  # Adjust if necessary based on how you use it in your app.
+    networks:
+      - pg_network
+
+volumes:
+  postgres_data:
+
+networks:
+  pg_network:

@@ -1,20 +1,9 @@
 export default {
-  plugins: ['@typescript-eslint', 'react', 'prettier'],
   env: {
     browser: true,
     es2021: true,
   },
-  settings: {
-    react: {
-      version: '18.2.0', // Укажите вашу версию React
-    },
-  },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
   overrides: [
     {
       env: {
@@ -26,16 +15,12 @@ export default {
       },
     },
   ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-
   rules: {
-    'react/prop-types': 'off',
     'no-var': 'error',
-    '@typescript-eslint/no-explicit-any': 'on',
     'prefer-const': 'warn',
     'prettier/prettier': [
       'warn',
@@ -51,6 +36,5 @@ export default {
       { blankLine: 'always', prev: 'import', next: '*' },
       { blankLine: 'never', prev: 'import', next: 'import' },
     ],
-    'react/react-in-jsx-scope': 'off',
   },
 };
