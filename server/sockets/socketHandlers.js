@@ -17,8 +17,6 @@ const socketHandlers = (io) => {
           return;
         }
 
-        const isCreator = channel.creatorId === userId;
-
         await ChannelUser.findOrCreate({
           where: {
             userId,
@@ -50,10 +48,8 @@ const socketHandlers = (io) => {
 
         const usernamesInChannel = users.map((user) => user.username);
 
-        socket.emit('loadMessages', messagesWithUsernames);
-        socket.emit('updateChannelUsers', usernamesInChannel);
-
-        socket.emit('isCreator', isCreator);
+        io.to(channelName).emit('loadMessages', messagesWithUsernames);
+        io.to(channelName).emit('updateChannelUsers', usernamesInChannel);
       } catch (err) {
         console.error('Error loading messages or users:', err.message);
       }

@@ -1,19 +1,17 @@
-// src/server.js
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import bodyParser from 'body-parser'; // Ensure body-parser is imported
-import sequelize from './dbconnector/db.js'; // Import sequelize instance
-import socketHandlers from './sockets/socketHandlers.js'; // Import socket handlers
-import routes from './routes/router.js'; // Import channel routes
+import bodyParser from 'body-parser';
+import sequelize from './dbconnector/db.js';
+import socketHandlers from './sockets/socketHandlers.js';
+import routes from './routes/router.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import { Channel } from './models/models.js';
 
 dotenv.config();
 
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000'; // Fallback URL for development
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -41,14 +39,6 @@ app.use('/', routes);
   try {
     await sequelize.sync();
     console.log('Database synced successfully.');
-
-    const defaultChannelName = 'general';
-    const [channel] = await Channel.findOrCreate({
-      where: { name: defaultChannelName },
-      defaults: { creatorId: 1 },
-    });
-
-    console.log(`Default channel "${channel.name}" is ready.`);
 
     server.listen(3001, '0.0.0.0', () => {
       console.log('Server is running on http://localhost:3001');

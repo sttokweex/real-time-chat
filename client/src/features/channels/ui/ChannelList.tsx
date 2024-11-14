@@ -50,7 +50,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
       </form>
       <ul>
         {channels.map((channel) => (
-          <li key={channel.id}>
+          <li key={channel.name}>
             <span>{channel.name}</span>
             {channel.userRole !== 'unstated' ? (
               <>

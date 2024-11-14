@@ -12,6 +12,7 @@ interface ChatPageProps {
 
 const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
   const socketUrl = import.meta.env.VITE_DEV_PORT;
+
   const {
     channels,
     messages,
@@ -22,8 +23,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
     setChannels,
     createChannel,
     deleteUser,
-    isCreatorChannel,
   } = useSocket(socketUrl, userData);
+  let isAdmin: boolean;
+
+  channels.map((ch) => {
+    if (ch.name == currentChannel) {
+      isAdmin = ch.userRole == 'admin';
+    }
+  });
+  console.log(channels);
   useEffect(() => console.log(activeUsers), [activeUsers]);
   const handleDeleteUser = (username: string) => {
     deleteUser(currentChannel, username, userData.id);
@@ -45,7 +53,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
         {activeUsers.map((username) => (
           <li key={username}>
             {username}
-            {username !== userData.username && isCreatorChannel && (
+            {username !== userData.username && isAdmin && (
               <button onClick={() => handleDeleteUser(username)}>Remove</button>
             )}
           </li>

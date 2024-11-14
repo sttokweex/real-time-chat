@@ -22,7 +22,7 @@ class AuthController {
         throw ApiError.BadRequest('User already exists');
       }
 
-      const hashPassword = bcrypt.hashSync(password, 10); // Use a strong salt rounds value
+      const hashPassword = bcrypt.hashSync(password, 10);
       const user = await User.create({
         username,
         password: hashPassword,

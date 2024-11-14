@@ -8,13 +8,18 @@ interface Channel {
   name: string;
   userRole: string;
 }
+interface ChannelResponse {
+  id: string;
+  name: string;
+  creatorId: string;
+}
 
 const useSocket = (socketUrl: string, userData: User) => {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<string>('');
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
-  const [isCreatorChannel, setIsCreatorChannel] = useState<boolean>(false);
+
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
@@ -27,15 +32,19 @@ const useSocket = (socketUrl: string, userData: User) => {
     socket.on('userRemoved', (deletedUsername: string) => {
       if (deletedUsername === userData.username) {
         setMessages([]);
+        setChannels((prevChannels) => {
+          console.log(prevChannels);
+
+          return prevChannels;
+        });
         setCurrentChannel('');
       }
-      setActiveUsers((prevActiveUsers) =>
-        prevActiveUsers.filter((username) => username !== deletedUsername),
-      );
-    });
 
-    socket.on('isCreator', (isCreator: boolean) => {
-      setIsCreatorChannel(isCreator);
+      setActiveUsers((prevActiveUsers) => {
+        return prevActiveUsers.filter(
+          (username) => username !== deletedUsername,
+        );
+      });
     });
 
     socket.on('receiveMessage', (message: Message) => {
@@ -46,8 +55,18 @@ const useSocket = (socketUrl: string, userData: User) => {
       setMessages(loadedMessages);
     });
 
-    socket.on('channelCreated', (newChannel: Channel) => {
-      setChannels((prevChannels) => [...prevChannels, newChannel]);
+    socket.on('channelCreated', (newChannel: ChannelResponse) => {
+      const role = newChannel.creatorId == userData.id ? 'admin' : 'unstated';
+
+      if (newChannel.creatorId == userData.id) {
+        joinChannel(newChannel.name, userData.id);
+      }
+      const channelData = {
+        id: newChannel.id,
+        name: newChannel.name,
+        userRole: role,
+      };
+      setChannels((prevChannels) => [...prevChannels, channelData]);
     });
 
     socket.on('updateChannelUsers', (usernames: string[]) => {
@@ -59,6 +78,7 @@ const useSocket = (socketUrl: string, userData: User) => {
       socket.off('loadMessages');
       socket.off('channelCreated');
       socket.off('updateChannelUsers');
+
       socket.disconnect();
     };
   }, [socketUrl]);
@@ -79,7 +99,7 @@ const useSocket = (socketUrl: string, userData: User) => {
 
       if (updatedChannels.length > 0) {
         const firstChannelName = updatedChannels[0].name;
-        setCurrentChannel(firstChannelName);
+
         joinChannel(firstChannelName, userData.id);
       }
     } catch (error: any) {
@@ -90,8 +110,6 @@ const useSocket = (socketUrl: string, userData: User) => {
   const joinChannel = (channelId: string, userId: string) => {
     setCurrentChannel(channelId);
     setMessages([]);
-
-    // Emit join channel event
     socketRef.current?.emit('joinChannel', { channelName: channelId, userId });
   };
 
@@ -137,7 +155,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     joinChannel,
     createChannel,
     sendMessage,
-    isCreatorChannel,
+
     deleteUser,
   };
 };
