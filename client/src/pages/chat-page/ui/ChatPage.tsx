@@ -19,6 +19,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
     activeUsers,
     joinChannel,
     sendMessage,
+    setChannels,
     createChannel,
     deleteUser,
     isCreatorChannel,
@@ -32,9 +33,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
     <div>
       <Header userData={userData} refetch={refetch} />
       <ChannelList
+        currentChannel={currentChannel}
         userData={userData}
         channels={channels}
         joinChannel={joinChannel}
+        setChannels={setChannels}
         createChannel={createChannel}
       />
       <h2>Active Users on {currentChannel}</h2>

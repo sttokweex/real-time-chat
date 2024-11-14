@@ -1,19 +1,46 @@
 import { Router } from 'express';
-import { Channel } from '../models/models.js';
+import { Channel, ChannelUser } from '../models/models.js';
 import authController from '../controllers/authController.js';
+import authMiddleware from '../middleware/auth-middleware.js';
 
 const router = Router();
 
-router.get('/api/channels', async (req, res) => {
+router.get('/api/channels', authMiddleware, async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const channels = await Channel.findAll();
 
-    res.json(channels);
+    const userChannels = await ChannelUser.findAll({
+      where: { userId },
+      attributes: ['channelId'],
+    });
+
+    const userChannelIds = new Set(
+      userChannels.map((userChannel) => userChannel.channelId),
+    );
+
+    const response = channels.map((channel) => {
+      const role = userChannelIds.has(channel.id)
+        ? channel.creatorId == userId
+          ? 'admin'
+          : 'member'
+        : 'unstated';
+
+      return {
+        id: channel.id,
+        name: channel.name,
+        userRole: role,
+      };
+    });
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching channels:', error);
     res.status(500).json({ error: 'Failed to fetch channels' });
   }
 });
+
 router.post('/api/registration', authController.registration);
 
 router.post('/api/login', authController.login);

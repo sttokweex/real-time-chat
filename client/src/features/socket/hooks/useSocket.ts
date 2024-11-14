@@ -1,9 +1,16 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
+import apiClient from '@/shared/http/axios/axiosInstance';
 import { Message, User } from '@/shared/type/index';
 
+interface Channel {
+  id: string;
+  name: string;
+  userRole: string;
+}
+
 const useSocket = (socketUrl: string, userData: User) => {
-  const [channels, setChannels] = useState<string[]>([]);
+  const [channels, setChannels] = useState<Channel[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<string>('');
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
@@ -16,6 +23,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     const socket = socketRef.current;
 
     fetchChannels();
+
     socket.on('userRemoved', (deletedUsername: string) => {
       if (deletedUsername === userData.username) {
         setMessages([]);
@@ -29,6 +37,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     socket.on('isCreator', (isCreator: boolean) => {
       setIsCreatorChannel(isCreator);
     });
+
     socket.on('receiveMessage', (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
@@ -37,8 +46,8 @@ const useSocket = (socketUrl: string, userData: User) => {
       setMessages(loadedMessages);
     });
 
-    socket.on('channelCreated', (newChannel: { name: string }) => {
-      setChannels((prevChannels) => [...prevChannels, newChannel.name]);
+    socket.on('channelCreated', (newChannel: Channel) => {
+      setChannels((prevChannels) => [...prevChannels, newChannel]);
     });
 
     socket.on('updateChannelUsers', (usernames: string[]) => {
@@ -56,20 +65,24 @@ const useSocket = (socketUrl: string, userData: User) => {
 
   const fetchChannels = async () => {
     try {
-      const response = await fetch(`${socketUrl}/api/channels`);
+      const response = await apiClient.get('/channels');
 
-      if (!response.ok) throw new Error('Failed to fetch channels');
-      const data = await response.json();
-      const channelNames = data.map(
-        (channel: { name: string }) => channel.name,
-      );
-      setChannels(channelNames);
+      if (response.status !== 200) throw new Error('Failed to fetch channels');
 
-      if (channelNames.length > 0) {
-        setCurrentChannel(channelNames[0]);
-        joinChannel(channelNames[0], userData.id);
+      const updatedChannels = response.data.map((channel: Channel) => ({
+        id: channel.id,
+        name: channel.name,
+        userRole: channel.userRole,
+      }));
+
+      setChannels(updatedChannels);
+
+      if (updatedChannels.length > 0) {
+        const firstChannelName = updatedChannels[0].name;
+        setCurrentChannel(firstChannelName);
+        joinChannel(firstChannelName, userData.id);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching channels:', error);
     }
   };
@@ -78,8 +91,10 @@ const useSocket = (socketUrl: string, userData: User) => {
     setCurrentChannel(channelId);
     setMessages([]);
 
+    // Emit join channel event
     socketRef.current?.emit('joinChannel', { channelName: channelId, userId });
   };
+
   const deleteUser = (
     channelName: string,
     deletedUsername: string,
@@ -117,6 +132,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     currentChannel,
     activeUsers,
     isRegistered,
+    setChannels,
     setIsRegistered,
     joinChannel,
     createChannel,

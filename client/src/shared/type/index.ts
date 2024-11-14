@@ -13,6 +13,10 @@ export interface Channel {
   name: string;
   creator: string;
 }
+export interface TokenData {
+  token: string;
+  exp: number;
+}
 export interface User {
   username: string;
   role: string;

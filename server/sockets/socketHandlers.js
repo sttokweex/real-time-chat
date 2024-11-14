@@ -33,7 +33,7 @@ const socketHandlers = (io) => {
 
         const messagesWithUsernames = messages.map((message) => ({
           ...message.toJSON(),
-          username: message.user.username, // Ensure this matches your association
+          username: message.user.username,
         }));
 
         const channelUsers = await ChannelUser.findAll({
