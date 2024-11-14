@@ -1,26 +1,29 @@
-// src/models.js
 import { DataTypes } from 'sequelize';
-import sequelize from '../db.js'; // Import the sequelize instance
+import sequelize from '../dbconnector/db.js';
 
-// Define the User model
-const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+const User = sequelize.define(
+  'users',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
+    },
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+    },
+    role: { type: DataTypes.STRING, defaultValue: 'user' },
   },
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
+  {
+    timestamps: false,
   },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
+);
 
-// Define the Channel model
 const Channel = sequelize.define('Channel', {
   id: {
     type: DataTypes.INTEGER,
@@ -31,13 +34,16 @@ const Channel = sequelize.define('Channel', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  creator: {
-    type: DataTypes.STRING,
+  creatorId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'id',
+    },
     allowNull: false,
   },
 });
 
-// Define the Message model
 const Message = sequelize.define('Message', {
   id: {
     type: DataTypes.INTEGER,
@@ -48,7 +54,7 @@ const Message = sequelize.define('Message', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Channel, // Reference to Channel model
+      model: Channel,
       key: 'id',
     },
   },
@@ -56,36 +62,74 @@ const Message = sequelize.define('Message', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  username: {
-    type: DataTypes.STRING,
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'id',
+    },
     allowNull: false,
   },
   timestamp: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW, // Set default value to current date/time
+    defaultValue: DataTypes.NOW,
   },
 });
 
-// Define associations
+const ChannelUser = sequelize.define(
+  'ChannelUser',
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: 'id',
+      },
+      allowNull: false,
+    },
+    channelId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Channel,
+        key: 'id',
+      },
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: false,
+  },
+);
+const Token = sequelize.define(
+  'token',
+  {
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: 'id',
+      },
+    },
+    refresh: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: false,
+  },
+);
+
+User.hasMany(Channel, { foreignKey: 'creatorId' });
+Channel.belongsTo(User, { foreignKey: 'creatorId' });
+
+User.hasMany(Message, { foreignKey: 'userId' });
+Message.belongsTo(User, { foreignKey: 'userId' });
+
 Channel.hasMany(Message, { foreignKey: 'channel_id' });
 Message.belongsTo(Channel, { foreignKey: 'channel_id' });
 
-// Sync models with database (optional, can be done in server.js)
-export const syncDatabase = async () => {
-  try {
-    await sequelize.sync(); // Synchronize all defined models to the DB.
-    console.log('All models were synchronized successfully.');
+User.belongsToMany(Channel, { through: ChannelUser, foreignKey: 'userId' });
+Channel.belongsToMany(User, { through: ChannelUser, foreignKey: 'channelId' });
 
-    // Optionally create default channels here if needed.
-    const defaultChannelName = 'general';
-    await Channel.findOrCreate({
-      where: { name: defaultChannelName },
-      defaults: { creator: 'System' },
-    });
-  } catch (error) {
-    console.error('Error syncing database:', error);
-  }
-};
-
-// Export models for use in other files
-export { User, Channel, Message };
+export { User, Channel, Message, Token, ChannelUser };

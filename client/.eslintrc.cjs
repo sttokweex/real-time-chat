@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   plugins: ['@typescript-eslint', 'react', 'prettier'],
   env: {
     browser: true,
@@ -14,6 +14,7 @@ export default {
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:prettier/recommended',
+    'plugin:@conarti/feature-sliced/recommended',
   ],
   overrides: [
     {
@@ -35,7 +36,7 @@ export default {
   rules: {
     'react/prop-types': 'off',
     'no-var': 'error',
-    '@typescript-eslint/no-explicit-any': 'on',
+    '@typescript-eslint/no-explicit-any': 'warn',
     'prefer-const': 'warn',
     'prettier/prettier': [
       'warn',

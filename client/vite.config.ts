@@ -1,5 +1,5 @@
-import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
       VITE_DEV_PORT: JSON.stringify(
         env.VITE_DEV_PORT || 'http://localhost:3001',
       ),
+    },
+    resolve: {
+      alias: {
+        '@': '/src', // Устанавливаем @ как алиас для src
+      },
     },
   };
 });

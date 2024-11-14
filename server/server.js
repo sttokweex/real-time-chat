@@ -3,13 +3,17 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import sequelize from './db.js'; // Импорт экземпляра sequelize
-import socketHandlers from './socketHandlers.js'; // Импорт обработчиков сокетов
-import routes from './routes/index.js'; // Импорт маршрутов каналов
+import bodyParser from 'body-parser'; // Ensure body-parser is imported
+import sequelize from './dbconnector/db.js'; // Import sequelize instance
+import socketHandlers from './sockets/socketHandlers.js'; // Import socket handlers
+import routes from './routes/router.js'; // Import channel routes
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import { Channel } from './models/models.js';
 
 dotenv.config();
-const clientUrl = process.env.CLIENT_URL;
+
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000'; // Fallback URL for development
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -28,21 +32,30 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(cookieParser());
 
+app.use(bodyParser.json({ strict: false }));
 app.use('/', routes);
 
-await sequelize.sync();
+(async () => {
+  try {
+    await sequelize.sync();
+    console.log('Database synced successfully.');
 
-// const defaultChannelName = 'general';
-// const [channel] = await Channel.findOrCreate({
-//   where: { name: defaultChannelName },
-//   defaults: { creator: 'System' },
-// });
-// console.log(`Default channel "${channel.name}" is ready.`);
+    const defaultChannelName = 'general';
+    const [channel] = await Channel.findOrCreate({
+      where: { name: defaultChannelName },
+      defaults: { creatorId: 1 },
+    });
+
+    console.log(`Default channel "${channel.name}" is ready.`);
+
+    server.listen(3001, '0.0.0.0', () => {
+      console.log('Server is running on http://localhost:3001');
+    });
+  } catch (error) {
+    console.error('Error syncing database:', error);
+  }
+})();
 
 socketHandlers(io);
-
-server.listen(3001, '0.0.0.0', () => {
-  console.log('Server is running on http://localhost:3001');
-});
