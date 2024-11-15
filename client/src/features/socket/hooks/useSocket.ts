@@ -87,6 +87,7 @@ const useSocket = (socketUrl: string, userData: User) => {
       socket.off('loadMessages');
       socket.off('channelCreated');
       socket.off('updateChannelUsers');
+      socket.off('userRemoved');
       socket.off('userKicked');
 
       socket.disconnect();
