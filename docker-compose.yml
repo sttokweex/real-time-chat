@@ -24,8 +24,8 @@ services:
 
   server:
     build: 
-      context: ./server  # Path to your server directory
-      dockerfile: Dockerfile  # Name of your Dockerfile for the server
+      context: ./server  
+      dockerfile: Dockerfile  
     environment:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -37,28 +37,29 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./server:/usr/src/app  # Ensure this matches WORKDIR in Dockerfile 
+      - ./server:/usr/src/app  
     networks:
       - pg_network  
 
   client:
     build: 
-      context: ./client  # Path to your client directory
-      dockerfile: Dockerfile  # Name of your Dockerfile for the client
+      context: ./client  
+      dockerfile: Dockerfile  
     container_name: client-chat
     restart: always
     ports:
-      - "80:80"
+      - "3000:3000"
     volumes:
       - ./client:/app 
-      - /app/node_modules  # Ensure this is necessary for your setup; consider using named volumes instead.
+      - node_modules:/app/node_modules  # Используйте именованный том вместо прямого монтирования
     environment:
-      - VITE_DEV_PORT=http://localhost:3001  # Adjust if necessary based on how you use it in your app.
+      - VITE_DEV_PORT=http://localhost:3001  
     networks:
       - pg_network
 
 volumes:
   postgres_data:
+  node_modules: {}  # Определение именованного тома для node_modules
 
 networks:
   pg_network:

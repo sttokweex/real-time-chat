@@ -27,19 +27,24 @@ const useSocket = (socketUrl: string, userData: User) => {
     socketRef.current = io(socketUrl);
     const socket = socketRef.current;
 
+    socket.emit('setUser', userData.id);
+
     fetchChannels();
+    socket.on('userKicked', () => {
+      console.log('ya-');
+      setMessages([]);
+      setChannels((prevChannels) => {
+        console.log(prevChannels);
 
+        return prevChannels;
+      });
+      setActiveUsers(() => {
+        return [];
+      });
+      setCurrentChannel('');
+    });
     socket.on('userRemoved', (deletedUsername: string) => {
-      if (deletedUsername === userData.username) {
-        setMessages([]);
-        setChannels((prevChannels) => {
-          console.log(prevChannels);
-
-          return prevChannels;
-        });
-        setCurrentChannel('');
-      }
-
+      console.log('he-');
       setActiveUsers((prevActiveUsers) => {
         return prevActiveUsers.filter(
           (username) => username !== deletedUsername,
@@ -70,6 +75,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     });
 
     socket.on('updateChannelUsers', (usernames: string[]) => {
+      console.log('updatepls');
       setActiveUsers(usernames);
     });
 
@@ -78,10 +84,11 @@ const useSocket = (socketUrl: string, userData: User) => {
       socket.off('loadMessages');
       socket.off('channelCreated');
       socket.off('updateChannelUsers');
+      socket.off('userKicked');
 
       socket.disconnect();
     };
-  }, [socketUrl]);
+  }, [socketUrl, userData.id]);
 
   const fetchChannels = async () => {
     try {
@@ -110,7 +117,12 @@ const useSocket = (socketUrl: string, userData: User) => {
   const joinChannel = (channelId: string, userId: string) => {
     setCurrentChannel(channelId);
     setMessages([]);
+    console.log(channelId);
     socketRef.current?.emit('joinChannel', { channelName: channelId, userId });
+  };
+  const changeChannel = (oldChannelName: string) => {
+    console.log(oldChannelName);
+    socketRef.current?.emit('changeChannel', oldChannelName);
   };
 
   const deleteUser = (
@@ -155,7 +167,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     joinChannel,
     createChannel,
     sendMessage,
-
+    changeChannel,
     deleteUser,
   };
 };

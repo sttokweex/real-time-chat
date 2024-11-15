@@ -12,6 +12,7 @@ interface ChannelListProps {
   channels: Channel[];
   currentChannel: string;
   joinChannel: (channelId: string, userId: string) => void;
+  changeChannel: (channelName: string) => void;
   setChannels: React.Dispatch<React.SetStateAction<Channel[]>>;
   createChannel: (channelName: string) => void;
 }
@@ -22,6 +23,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
   currentChannel,
   userData,
   setChannels,
+  changeChannel,
   createChannel,
 }) => {
   const [newChannelName, setNewChannelName] = useState('');
@@ -58,6 +60,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                   <>
                     <button
                       onClick={() => {
+                        changeChannel(currentChannel);
                         joinChannel(channel.name, userData.id);
                       }}
                     >

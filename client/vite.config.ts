@@ -1,3 +1,4 @@
+import path from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 
@@ -7,7 +8,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
-      port: 80,
+      port: 3000,
       host: true,
       watch: {
         usePolling: true,
@@ -24,7 +25,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': '/src', // Устанавливаем @ как алиас для src
+        '@': path.resolve(__dirname, 'src'), // Используйте path.resolve для корректного разрешения
       },
     },
   };
