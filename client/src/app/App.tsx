@@ -12,7 +12,6 @@ import useAuth from '@/shared/hooks/useAuth';
 
 const App: React.FC = () => {
   const { userData, refetch } = useAuth();
-  console.log(userData);
 
   return (
     <Router>
