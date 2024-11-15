@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Header } from '@/widgets/header/';
 import { ChannelList } from '@/features/channels';
 import { MessageInput, MessageList } from '@/features/messages';
@@ -32,8 +32,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
       isAdmin = ch.userRole == 'admin';
     }
   });
-  console.log(channels);
-  useEffect(() => console.log(activeUsers), [activeUsers]);
+
   const handleDeleteUser = (username: string) => {
     deleteUser(currentChannel, username, userData.id);
   };

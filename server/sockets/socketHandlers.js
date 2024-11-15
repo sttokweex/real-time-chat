@@ -8,14 +8,10 @@ const socketHandlers = (io) => {
     socket.on('joinChannel', async ({ channelName, userId }) => {
       socket.join(channelName);
 
-      console.log(`User joined channel: ${channelName}`);
-
       try {
         const channel = await Channel.findOne({ where: { name: channelName } });
 
         if (!channel) {
-          console.error('Channel not found:', channelName);
-
           return;
         }
 
@@ -119,7 +115,7 @@ const socketHandlers = (io) => {
           if (kickedSocket) {
             kickedSocket.leave(channelName);
             kickedSocket.leave(`${channelName}All`);
-            kickedSocket.emit('userKicked');
+            kickedSocket.emit('userKicked', channelName);
           }
           const channel = await Channel.findOne({
             where: { name: channelName },

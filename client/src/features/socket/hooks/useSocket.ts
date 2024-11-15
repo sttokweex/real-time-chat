@@ -30,21 +30,25 @@ const useSocket = (socketUrl: string, userData: User) => {
     socket.emit('setUser', userData.id);
 
     fetchChannels();
-    socket.on('userKicked', () => {
-      console.log('ya-');
+    socket.on('userKicked', (channelName: string) => {
       setMessages([]);
-      setChannels((prevChannels) => {
-        console.log(prevChannels);
+      setActiveUsers([]);
 
-        return prevChannels;
+      setChannels((prevChannels) => {
+        const updatedChannels = prevChannels.map((channel) => {
+          if (channel.name === channelName) {
+            return { ...channel, userRole: 'unstated' };
+          }
+
+          return channel;
+        });
+
+        return updatedChannels;
       });
-      setActiveUsers(() => {
-        return [];
-      });
+
       setCurrentChannel('');
     });
     socket.on('userRemoved', (deletedUsername: string) => {
-      console.log('he-');
       setActiveUsers((prevActiveUsers) => {
         return prevActiveUsers.filter(
           (username) => username !== deletedUsername,
@@ -75,7 +79,6 @@ const useSocket = (socketUrl: string, userData: User) => {
     });
 
     socket.on('updateChannelUsers', (usernames: string[]) => {
-      console.log('updatepls');
       setActiveUsers(usernames);
     });
 
@@ -117,11 +120,10 @@ const useSocket = (socketUrl: string, userData: User) => {
   const joinChannel = (channelId: string, userId: string) => {
     setCurrentChannel(channelId);
     setMessages([]);
-    console.log(channelId);
+
     socketRef.current?.emit('joinChannel', { channelName: channelId, userId });
   };
   const changeChannel = (oldChannelName: string) => {
-    console.log(oldChannelName);
     socketRef.current?.emit('changeChannel', oldChannelName);
   };
 
