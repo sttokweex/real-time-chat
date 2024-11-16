@@ -33,6 +33,7 @@ const Channel = sequelize.define('Channel', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   creatorId: {
     type: DataTypes.INTEGER,

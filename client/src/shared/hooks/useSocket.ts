@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import apiClient from '@/shared/http/axios/axiosInstance';
-import { Message, User } from '@/shared/type/index';
+import apiClient from '../http/axios/axiosInstance';
+import { Message, User } from '../type';
 
 interface Channel {
   id: string;
@@ -30,10 +30,14 @@ const useSocket = (socketUrl: string, userData: User) => {
     socket.emit('setUser', userData.id);
 
     fetchChannels();
-    socket.on('userKicked', (channelName: string) => {
-      setMessages([]);
-      setActiveUsers([]);
 
+    socket.on('userKicked', (channelName: string) => {
+      if (channelName == localStorage.getItem('currentChannel')) {
+        setMessages([]);
+        setActiveUsers([]);
+        setCurrentChannel('');
+        localStorage.removeItem('currentChannel');
+      }
       setChannels((prevChannels) => {
         const updatedChannels = prevChannels.map((channel) => {
           if (channel.name === channelName) {
@@ -45,9 +49,8 @@ const useSocket = (socketUrl: string, userData: User) => {
 
         return updatedChannels;
       });
-
-      setCurrentChannel('');
     });
+
     socket.on('userRemoved', (deletedUsername: string) => {
       setActiveUsers((prevActiveUsers) => {
         return prevActiveUsers.filter(
@@ -65,16 +68,18 @@ const useSocket = (socketUrl: string, userData: User) => {
     });
 
     socket.on('channelCreated', (newChannel: ChannelResponse) => {
-      const role = newChannel.creatorId == userData.id ? 'admin' : 'unstated';
+      const role = newChannel.creatorId === userData.id ? 'admin' : 'unstated';
 
-      if (newChannel.creatorId == userData.id) {
+      if (newChannel.creatorId === userData.id) {
         joinChannel(newChannel.name, userData.id);
       }
+
       const channelData = {
         id: newChannel.id,
         name: newChannel.name,
         userRole: role,
       };
+
       setChannels((prevChannels) => [...prevChannels, channelData]);
     });
 
@@ -108,22 +113,34 @@ const useSocket = (socketUrl: string, userData: User) => {
 
       setChannels(updatedChannels);
 
-      if (updatedChannels.length > 0) {
-        const firstChannelName = updatedChannels[0].name;
+      const savedChannel = localStorage.getItem('currentChannel');
 
-        joinChannel(firstChannelName, userData.id);
+      if (savedChannel) {
+        const existingChannel = updatedChannels.find(
+          (channel: Channel) => channel.name === savedChannel,
+        );
+
+        if (existingChannel) {
+          joinChannel(existingChannel.name, userData.id);
+        }
       }
     } catch (error: any) {
       console.error('Error fetching channels:', error);
     }
   };
 
-  const joinChannel = (channelId: string, userId: string) => {
-    setCurrentChannel(channelId);
+  const joinChannel = (channelName: string, userId: string) => {
+    setCurrentChannel(channelName);
     setMessages([]);
 
-    socketRef.current?.emit('joinChannel', { channelName: channelId, userId });
+    localStorage.setItem('currentChannel', channelName);
+
+    socketRef.current?.emit('joinChannel', {
+      channelName: channelName,
+      userId,
+    });
   };
+
   const changeChannel = (oldChannelName: string) => {
     socketRef.current?.emit('changeChannel', oldChannelName);
   };
@@ -143,7 +160,7 @@ const useSocket = (socketUrl: string, userData: User) => {
   const sendMessage = (messageInput: string) => {
     if (messageInput && currentChannel) {
       socketRef.current?.emit('sendMessage', {
-        channelId: currentChannel,
+        channelName: currentChannel,
         message: messageInput,
         userId: userData.id,
       });
@@ -151,6 +168,8 @@ const useSocket = (socketUrl: string, userData: User) => {
   };
 
   const createChannel = (newChannelName: string) => {
+    console.log(newChannelName);
+
     if (newChannelName) {
       socketRef.current?.emit('createChannel', {
         name: newChannelName,

@@ -37,12 +37,10 @@ app.use('/', routes);
 
 (async () => {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     console.log('Database synced successfully.');
 
-    server.listen(3001, '0.0.0.0', () => {
-      console.log('Server is running on http://localhost:3001');
-    });
+    server.listen(3001, '0.0.0.0', () => {});
   } catch (error) {
     console.error('Error syncing database:', error);
   }

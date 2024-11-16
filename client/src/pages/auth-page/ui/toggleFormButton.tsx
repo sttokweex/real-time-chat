@@ -10,7 +10,11 @@ const ToggleFormButton: React.FC<ToggleFormButtonProps> = ({
   setIsLogin,
 }) => {
   return (
-    <button type="button" onClick={() => setIsLogin(!isLogin)}>
+    <button
+      type="button"
+      onClick={() => setIsLogin(!isLogin)}
+      className="mt-4 w-full bg-gray-700 text-white p-2 rounded-md hover:bg-gray-600 transition duration-200"
+    >
       {isLogin
         ? "Don't have an account? Register"
         : 'Already have an account? Login'}

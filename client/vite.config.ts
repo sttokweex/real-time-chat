@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
-      port: 3000,
+      port: +env.VITE_CLIENT_PORT,
       host: true,
       watch: {
         usePolling: true,
@@ -19,9 +19,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      VITE_DEV_PORT: JSON.stringify(
-        env.VITE_DEV_PORT || 'http://localhost:3001',
-      ),
+      VITE_SERVER_PORT: JSON.stringify(env.VITE_SERVER_PORT),
     },
     resolve: {
       alias: {

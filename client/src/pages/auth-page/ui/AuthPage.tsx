@@ -32,26 +32,47 @@ const AuthPage: FC = () => {
   };
 
   return (
-    <div>
-      <h2>{isLogin ? 'Login' : 'Registration'}</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <input
-            {...register('username', { required: true })}
-            placeholder="Username"
-            type="text"
-          />
-          {errors.username && <span>Username is required</span>}
-          <input
-            {...register('password', { required: true })}
-            placeholder="Password"
-            type="password"
-          />
-          {errors.password && <span>Password is required</span>}
-        </div>
-        <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
-      </form>
-      <ToggleFormButton isLogin={isLogin} setIsLogin={setIsLogin} />
+    <div className="flex items-center justify-center h-screen bg-gray-900">
+      {' '}
+      {/* Centering the form */}
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm">
+        {' '}
+        {/* Form container */}
+        <h2 className="text-2xl font-semibold mb-4 text-white text-center">
+          {isLogin ? 'Login' : 'Registration'}
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <input
+              {...register('username', { required: true })}
+              placeholder="Username"
+              type="text"
+              className={`w-full p-2 rounded-md bg-gray-700 text-white placeholder-gray-400 border ${errors.username ? 'border-red-500' : 'border-gray-600'}`}
+            />
+            {errors.username && (
+              <span className="text-red-500 text-sm">Username is required</span>
+            )}
+          </div>
+          <div className="mb-4">
+            <input
+              {...register('password', { required: true })}
+              placeholder="Password"
+              type="password"
+              className={`w-full p-2 rounded-md bg-gray-700 text-white placeholder-gray-400 border ${errors.password ? 'border-red-500' : 'border-gray-600'}`}
+            />
+            {errors.password && (
+              <span className="text-red-500 text-sm">Password is required</span>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-yellow-500 text-black p-2 rounded-md hover:bg-yellow-600 transition duration-200"
+          >
+            {isLogin ? 'Login' : 'Register'}
+          </button>
+        </form>
+        <ToggleFormButton isLogin={isLogin} setIsLogin={setIsLogin} />
+      </div>
     </div>
   );
 };

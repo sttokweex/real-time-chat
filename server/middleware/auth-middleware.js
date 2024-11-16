@@ -24,7 +24,6 @@ export default async (req, res, next) => {
     req.user = userData;
     next();
   } catch (e) {
-    console.error(e); // Логирование ошибки для отладки
-    next(e); // Передача ошибки дальше в цепочку middleware
+    next(e);
   }
 };

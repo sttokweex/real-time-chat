@@ -54,7 +54,8 @@ services:
       - ./client:/app  
       - /app/node_modules  
     environment:
-      - VITE_DEV_PORT=http://localhost:3001  
+      - VITE_SERVER_PORT=http://localhost:3001  
+      - VITE_CLIENT_PORT=3000
     networks:
       - pg_network
 

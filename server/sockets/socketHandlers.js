@@ -53,12 +53,12 @@ const socketHandlers = (io) => {
       }
     });
 
-    socket.on('sendMessage', async ({ channelId, message, userId }) => {
+    socket.on('sendMessage', async ({ channelName, message, userId }) => {
       try {
-        const channel = await Channel.findOne({ where: { name: channelId } });
+        const channel = await Channel.findOne({ where: { name: channelName } });
 
         if (!channel) {
-          console.error('Channel not found for ID:', channelId);
+          console.error('Channel not found for ID:', channelName);
 
           return;
         }
@@ -82,7 +82,7 @@ const socketHandlers = (io) => {
           username: user.username,
         };
 
-        io.to(channelId).emit('receiveMessage', messageWithUsername);
+        io.to(channelName).emit('receiveMessage', messageWithUsername);
       } catch (err) {
         console.error('Error inserting message:', err.message);
       }
@@ -90,6 +90,14 @@ const socketHandlers = (io) => {
 
     socket.on('createChannel', async ({ name, creatorId }) => {
       try {
+        const existingChannel = await Channel.findOne({
+          where: { name: name },
+        });
+
+        if (existingChannel) {
+          return;
+        }
+
         const newChannel = await Channel.create({ name, creatorId });
         io.emit('channelCreated', newChannel);
       } catch (err) {

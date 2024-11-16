@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { checkAccess } from './checkAcces';
 
-const API_URL = `${import.meta.env.VITE_DEV_PORT}/api`;
+const API_URL = `${import.meta.env.VITE_SERVER_PORT}/api`;
 
 const apiClient = axios.create({
   baseURL: API_URL,
