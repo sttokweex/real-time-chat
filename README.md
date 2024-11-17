@@ -13,13 +13,13 @@
 
 ## About The Project
 
-Provide an in-depth paragraph about your project, what it does, and its main features. Explain the problem it solves and who might benefit from it.
+This project is a **Real-Time Chat Application** that enables users to engage in live conversations within various channels. The application is designed to facilitate seamless communication among users, making it ideal for team collaboration, community discussions, or casual chatting.
 
 ### Built With
 
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- List any other frameworks or libraries used in your project.
+
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/real-time-chat
+   git clone https://github.com/sttokweex/real-time-chat
    cd real-time-chat
 2.Build the Docker images and start the containers using Docker Compose:
   ```bash
@@ -42,7 +42,7 @@ docker-compose up --build
 This command will build the images defined in your docker-compose.yml file and start the services.
 ## Usage
 Once the containers are running, you can access your application via:
-Web Application: Open your web browser and navigate to http://localhost:3000 (or whatever port you've configured in your docker-compose.yml).
+Web Application: Open your web browser and navigate to http://localhost:3000.
 ## Stopping the Application
 To stop the application, press CTRL + C in the terminal where Docker Compose is running or run:
 ```bash
