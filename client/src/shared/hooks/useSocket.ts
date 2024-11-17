@@ -8,6 +8,7 @@ interface Channel {
   name: string;
   userRole: string;
 }
+
 interface ChannelResponse {
   id: string;
   name: string;
@@ -19,82 +20,39 @@ const useSocket = (socketUrl: string, userData: User) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<string>('');
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
-
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
+
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
-    socketRef.current = io(socketUrl);
+    if (!socketRef.current) {
+      socketRef.current = io(socketUrl);
+    }
+
     const socket = socketRef.current;
 
     socket.emit('setUser', userData.id);
-
     fetchChannels();
 
-    socket.on('userKicked', (channelName: string) => {
-      if (channelName == localStorage.getItem('currentChannel')) {
-        setMessages([]);
-        setActiveUsers([]);
-        setCurrentChannel('');
-        localStorage.removeItem('currentChannel');
-      }
-      setChannels((prevChannels) => {
-        const updatedChannels = prevChannels.map((channel) => {
-          if (channel.name === channelName) {
-            return { ...channel, userRole: 'unstated' };
-          }
-
-          return channel;
-        });
-
-        return updatedChannels;
-      });
-    });
-
-    socket.on('userRemoved', (deletedUsername: string) => {
-      setActiveUsers((prevActiveUsers) => {
-        return prevActiveUsers.filter(
-          (username) => username !== deletedUsername,
-        );
-      });
-    });
-
-    socket.on('receiveMessage', (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    socket.on('loadMessages', (loadedMessages: Message[]) => {
-      setMessages(loadedMessages);
-    });
-
-    socket.on('channelCreated', (newChannel: ChannelResponse) => {
-      const role = newChannel.creatorId === userData.id ? 'admin' : 'unstated';
-
-      if (newChannel.creatorId === userData.id) {
-        joinChannel(newChannel.name, userData.id);
-      }
-
-      const channelData = {
-        id: newChannel.id,
-        name: newChannel.name,
-        userRole: role,
-      };
-
-      setChannels((prevChannels) => [...prevChannels, channelData]);
-    });
-
-    socket.on('updateChannelUsers', (usernames: string[]) => {
-      setActiveUsers(usernames);
-    });
+    socket.on('userKicked', handleUserKicked);
+    socket.on('userRemoved', handleUserRemoved);
+    socket.on('receiveMessage', handleReceiveMessage);
+    socket.on('loadMessages', handleLoadMessages);
+    socket.on('channelCreated', handleChannelCreated);
+    socket.on('updateChannelUsers', handleUpdateChannelUsers);
 
     return () => {
-      socket.off('receiveMessage');
-      socket.off('loadMessages');
-      socket.off('channelCreated');
-      socket.off('updateChannelUsers');
-      socket.off('userRemoved');
-      socket.off('userKicked');
-      socket.disconnect();
+      socket.off('userKicked', handleUserKicked);
+      socket.off('userRemoved', handleUserRemoved);
+      socket.off('receiveMessage', handleReceiveMessage);
+      socket.off('loadMessages', handleLoadMessages);
+      socket.off('channelCreated', handleChannelCreated);
+      socket.off('updateChannelUsers', handleUpdateChannelUsers);
+
+      if (socket) {
+        socket.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [socketUrl, userData.id]);
 
@@ -123,7 +81,7 @@ const useSocket = (socketUrl: string, userData: User) => {
           joinChannel(existingChannel.name, userData.id);
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching channels:', error);
     }
   };
@@ -131,13 +89,9 @@ const useSocket = (socketUrl: string, userData: User) => {
   const joinChannel = (channelName: string, userId: string) => {
     setCurrentChannel(channelName);
     setMessages([]);
-
     localStorage.setItem('currentChannel', channelName);
 
-    socketRef.current?.emit('joinChannel', {
-      channelName: channelName,
-      userId,
-    });
+    socketRef.current?.emit('joinChannel', { channelName, userId });
   };
 
   const changeChannel = (oldChannelName: string) => {
@@ -167,14 +121,63 @@ const useSocket = (socketUrl: string, userData: User) => {
   };
 
   const createChannel = (newChannelName: string) => {
-    console.log(newChannelName);
-
     if (newChannelName) {
       socketRef.current?.emit('createChannel', {
         name: newChannelName,
         creatorId: userData.id,
       });
     }
+  };
+
+  const handleUserKicked = (channelName: string) => {
+    if (channelName === localStorage.getItem('currentChannel')) {
+      setMessages([]);
+      setActiveUsers([]);
+      setCurrentChannel('');
+      localStorage.removeItem('currentChannel');
+    }
+
+    setChannels((prevChannels) =>
+      prevChannels.map((channel) =>
+        channel.name === channelName
+          ? { ...channel, userRole: 'unstated' }
+          : channel,
+      ),
+    );
+  };
+
+  const handleUserRemoved = (deletedUsername: string) => {
+    setActiveUsers((prevActiveUsers) =>
+      prevActiveUsers.filter((username) => username !== deletedUsername),
+    );
+  };
+
+  const handleReceiveMessage = (message: Message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
+  const handleLoadMessages = (loadedMessages: Message[]) => {
+    setMessages(loadedMessages);
+  };
+
+  const handleChannelCreated = (newChannel: ChannelResponse) => {
+    const role = newChannel.creatorId === userData.id ? 'admin' : 'unstated';
+
+    if (newChannel.creatorId === userData.id) {
+      joinChannel(newChannel.name, userData.id);
+    }
+
+    const channelData = {
+      id: newChannel.id,
+      name: newChannel.name,
+      userRole: role,
+    };
+
+    setChannels((prevChannels) => [...prevChannels, channelData]);
+  };
+
+  const handleUpdateChannelUsers = (usernames: string[]) => {
+    setActiveUsers(usernames);
   };
 
   return {
