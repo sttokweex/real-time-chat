@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { AuthPage } from '@/pages/auth-page';
 import { ChatPage } from '@/pages/chat-page';
-import useAuth from '@/shared/hooks/useAuth';
+import useAuth from '@/features/auth/hooks/useAuth';
 
 const App: React.FC = () => {
   const { userData, refetch } = useAuth();

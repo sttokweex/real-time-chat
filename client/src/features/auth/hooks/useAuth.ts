@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { refreshToken, useLogoutMutation } from '../http';
-import { User } from '../type';
+import { refreshToken } from '@/shared/http';
+import { useLogoutMutation } from '@/shared/http';
+import { User } from '@/shared/types';
 
 const useAuth = () => {
   const queryClient = useQueryClient();

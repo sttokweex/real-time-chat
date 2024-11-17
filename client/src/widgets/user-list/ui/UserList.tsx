@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import UserItem from './UserItem';
-import UserSearch from './UserSearch';
+import { UserSearch, UserItem } from '@/features/users';
 
 interface UsersListProps {
   activeUsers: string[];
@@ -25,7 +24,7 @@ const UsersList: React.FC<UsersListProps> = ({
 
   return (
     <div className="bg-gray-900 shadow-md p-4 h-full">
-      {filteredUsers.length !== 0 && (
+      {currentChannel != '' && (
         <>
           <h2 className="text-xl font-semibold mb-4 text-white text-center">
             Users on {currentChannel}
@@ -35,7 +34,7 @@ const UsersList: React.FC<UsersListProps> = ({
         </>
       )}
 
-      {filteredUsers.length === 0 ? (
+      {currentChannel == '' ? (
         <div className="flex-grow flex items-center justify-center">
           <p className="text-gray-400 text-center">
             No active users. Please join a channel to see active users.

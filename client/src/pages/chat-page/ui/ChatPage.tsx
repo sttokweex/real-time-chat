@@ -1,10 +1,10 @@
 import React from 'react';
+import { ChannelList } from '@/widgets/channel-list';
 import { Header } from '@/widgets/header/';
-import { ChannelList } from '@/features/channels';
-import { MessageInput, MessageList } from '@/features/messages';
-import { UsersList } from '@/features/user-list';
+import { MessageArea } from '@/widgets/message-area';
+import { UsersList } from '@/widgets/user-list';
 import useSocket from '@/shared/hooks/useSocket';
-import { Refetch, User } from '@/shared/type/index';
+import { Refetch, User } from '@/shared/types';
 
 interface ChatPageProps {
   userData: User;
@@ -51,17 +51,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
             createChannel={createChannel}
           />
         </div>
-
-        <div className="flex-1 flex flex-col bg-gray-00 max-h-[90.5vh]">
-          <MessageList messages={messages} currentChannel={currentChannel} />
-          <div className="">
-            <MessageInput
-              currentChannel={currentChannel}
-              sendMessage={sendMessage}
-            />
-          </div>
-        </div>
-
+        <MessageArea
+          messages={messages}
+          currentChannel={currentChannel}
+          sendMessage={sendMessage}
+        />
         <div className="w-1/4 bg-gray-800  border-l border-gray-700">
           <UsersList
             activeUsers={activeUsers}

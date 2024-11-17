@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import apiClient from '../http/axios/axiosInstance';
-import { Message, User } from '../type';
+import { Message, User } from '../types';
 
 interface Channel {
   id: string;
@@ -94,7 +94,6 @@ const useSocket = (socketUrl: string, userData: User) => {
       socket.off('updateChannelUsers');
       socket.off('userRemoved');
       socket.off('userKicked');
-
       socket.disconnect();
     };
   }, [socketUrl, userData.id]);

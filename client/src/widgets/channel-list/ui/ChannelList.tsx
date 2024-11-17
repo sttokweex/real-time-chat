@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { FaDoorOpen } from 'react-icons/fa';
+import {
+  ChannelItem,
+  ChannelSearch,
+  CreateChannelModal,
+  FindChannelsButton,
+} from '@/features/channels';
 import { User } from '@/shared/type';
-import ChannelItem from './ChannelItem';
-import ChannelSearch from './ChannelSearch';
-import CreateChannelModal from './CreateChannelModal';
-import FindChannelsButton from './FindChannelsButton';
 
 interface Channel {
   id: string;

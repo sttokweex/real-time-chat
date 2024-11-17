@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLogoutMutation } from '@/shared/http';
-import { Refetch, User } from '@/shared/type';
+import { Refetch, User } from '@/shared/types';
 
 export interface HeaderProps {
   userData: User;

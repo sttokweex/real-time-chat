@@ -7,16 +7,20 @@ export interface Message {
   username: string;
   timestamp: string;
 }
-
+export interface AuthResponse {
+  accessToken: string;
+  expirationTime: number;
+  user: {
+    username: string;
+    role: string;
+  };
+}
 export interface Channel {
   id: number;
   name: string;
   creator: string;
 }
-export interface TokenData {
-  token: string;
-  exp: number;
-}
+
 export interface User {
   username: string;
   role: string;
