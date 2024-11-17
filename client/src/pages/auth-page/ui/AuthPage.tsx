@@ -1,8 +1,7 @@
 // src/components/AuthPage/AuthPage.tsx
 
 import { FC, useState } from 'react';
-import { AuthForm, AuthHeader } from '@/features/auth';
-import ToggleFormButton from './toggleFormButton';
+import { AuthForm, AuthHeader, ToggleFormButton } from '@/features/auth';
 
 const AuthPage: FC = () => {
   const [isLogin, setIsLogin] = useState(true);
