@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLogoutMutation } from '@/shared/http';
+import { useLogoutMutation } from '@/features/auth';
 import { Refetch, User } from '@/shared/types';
 
 export interface HeaderProps {

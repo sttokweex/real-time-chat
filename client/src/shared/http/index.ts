@@ -1,30 +1,9 @@
-import {
-  useMutation,
-  UseMutationResult,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { AuthResponse, Refetch } from '../types';
-import apiClient from './axios/axiosInstance';
+import axios from 'axios';
+import { AuthResponse } from '../types';
 
-const useLogoutMutation = (
-  refetchUserData: Refetch,
-): UseMutationResult<void, unknown, void> => {
-  const queryClient = useQueryClient();
-
-  return useMutation<void>({
-    mutationFn: async (): Promise<void> => {
-      await apiClient.post(`/logout`, null);
-    },
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['user'] });
-      localStorage.clear();
-      refetchUserData();
-    },
-  });
-};
 const refreshToken = async (): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.get<AuthResponse>(`/refresh`);
+    const response = await axios.get<AuthResponse>(`/refresh`);
     const data = response.data;
 
     localStorage.setItem(
@@ -41,4 +20,4 @@ const refreshToken = async (): Promise<AuthResponse> => {
     throw error;
   }
 };
-export { refreshToken, useLogoutMutation };
+export { refreshToken };
