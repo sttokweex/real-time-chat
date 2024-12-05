@@ -11,7 +11,6 @@ import { AuthResponse, Refetch } from '@/shared/types';
 const API_URL = `${import.meta.env.VITE_SERVER_PORT}/api`;
 
 const apiAuth = axios.create({
-  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
