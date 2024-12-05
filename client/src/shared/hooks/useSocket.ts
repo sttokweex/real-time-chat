@@ -26,7 +26,9 @@ const useSocket = (socketUrl: string, userData: User) => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io(socketUrl);
+      socketRef.current =  io(socketUrl, {
+        path: '/socket.io/'
+    });
     }
 
     const socket = socketRef.current;
