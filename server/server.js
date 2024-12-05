@@ -24,7 +24,7 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: [clientUrl],
+    origin: [clientUrl, 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true,
   }),
