@@ -24,8 +24,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     networks:
       - pg_network
 
@@ -41,9 +39,6 @@ services:
       CLIENT_URL: ${CLIENT_URL}
     container_name: server-chat
     restart: always
-    volumes:
-      - ./server:/usr/src/app  
-      - /usr/src/app/node_modules  
     networks:
       - pg_network  
 
@@ -53,13 +48,7 @@ services:
       dockerfile: Dockerfile  
     container_name: client-chat
     restart: always
-    volumes:
-      - ./client:/app  
-      - /app/node_modules  
     networks:
       - pg_network
-
-volumes:
-  postgres_data:
-  node_modules: {}  
+ 
 
