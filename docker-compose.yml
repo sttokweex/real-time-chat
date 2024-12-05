@@ -58,7 +58,6 @@ services:
       - ./client:/app  
       - /app/node_modules  
     environment:
-      - VITE_SERVER_PORT=http://79.141.65.250:3001  
       - VITE_CLIENT_PORT=3000
     networks:
       - pg_network
