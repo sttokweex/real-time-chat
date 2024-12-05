@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { checkAccess } from './checkAcces';
+import { checkAccess } from './checkAccess';
 
 const API_URL = `/api`;
 

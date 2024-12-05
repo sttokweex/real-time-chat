@@ -7,7 +7,7 @@ services:
       - "80:80"
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
-      - '/etc/letsencrypt:/etc/letsencrypt'
+    
     depends_on:
       - some-postgres
       - server
@@ -53,8 +53,6 @@ services:
     volumes:
       - ./client:/app  
       - /app/node_modules  
-    environment:
-      - VITE_CLIENT_PORT=3000
     networks:
       - pg_network
 
