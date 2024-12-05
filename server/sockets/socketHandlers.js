@@ -2,22 +2,16 @@ import { Channel, Message, User, ChannelUser } from '../models/models.js';
 
 const socketHandlers = (io) => {
   io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id); // Log when a user connects
-
     socket.on('setUser', (userId) => {
       socket.userId = userId;
-      console.log(`User set: ${userId}`); // Log user ID when set
     });
-
     socket.on('joinChannel', async ({ channelName, userId }) => {
-      console.log(`${userId} joining channel: ${channelName}`); // Log joining channel
       socket.join(channelName);
 
       try {
         const channel = await Channel.findOne({ where: { name: channelName } });
 
         if (!channel) {
-          console.error(`Channel not found: ${channelName}`);
           return;
         }
 
@@ -60,12 +54,12 @@ const socketHandlers = (io) => {
     });
 
     socket.on('sendMessage', async ({ channelName, message, userId }) => {
-      console.log(`Message from ${userId} in ${channelName}: ${message}`); // Log message details
       try {
         const channel = await Channel.findOne({ where: { name: channelName } });
 
         if (!channel) {
           console.error('Channel not found for ID:', channelName);
+
           return;
         }
 
@@ -73,6 +67,7 @@ const socketHandlers = (io) => {
 
         if (!user) {
           console.error('User not found for ID:', userId);
+
           return;
         }
 
@@ -94,14 +89,12 @@ const socketHandlers = (io) => {
     });
 
     socket.on('createChannel', async ({ name, creatorId }) => {
-      console.log(`Creating new channel: ${name} by user ID: ${creatorId}`); // Log new channel creation
       try {
         const existingChannel = await Channel.findOne({
-          where: { name },
+          where: { name: name },
         });
 
         if (existingChannel) {
-          console.warn(`Channel already exists: ${name}`);
           return;
         }
 
@@ -115,7 +108,6 @@ const socketHandlers = (io) => {
     socket.on(
       'removeUserFromChannel',
       async ({ channelName, deletedUsername, userCreatorId }) => {
-        console.log(`Removing user ${deletedUsername} from channel ${channelName}`); // Log user removal
         try {
           const deletedUser = await User.findOne({
             where: { username: deletedUsername },
@@ -124,7 +116,6 @@ const socketHandlers = (io) => {
           if (!deletedUser) {
             return socket.emit('error', { message: 'User not found' });
           }
-          
           const kickedSocket = Array.from(io.sockets.sockets.values()).find(
             (s) => s.userId === deletedUser.id,
           );
@@ -133,9 +124,7 @@ const socketHandlers = (io) => {
             kickedSocket.leave(channelName);
             kickedSocket.leave(`${channelName}All`);
             kickedSocket.emit('userKicked', channelName);
-            console.log(`User ${deletedUsername} has been kicked from ${channelName}`); // Log successful kick
           }
-
           const channel = await Channel.findOne({
             where: { name: channelName },
           });
@@ -147,7 +136,6 @@ const socketHandlers = (io) => {
           await ChannelUser.destroy({
             where: { channelId: channel.id, userId: deletedUser.id },
           });
-          
           io.to(channelName).emit('userRemoved', deletedUsername);
         } catch (error) {
           console.error('Error removing user:', error.message);
@@ -156,12 +144,12 @@ const socketHandlers = (io) => {
     );
 
     socket.on('changeChannel', async (oldChannelName) => {
-      console.log(`${socket.userId} leaving ${oldChannelName}`); // Log when a user leaves a channel
+      console.log(socket.userId, 'leave', oldChannelName);
       socket.leave(oldChannelName);
     });
 
     socket.on('disconnect', () => {
-      console.log(`A user disconnected: ${socket.id}`); // Log when a user disconnects
+      console.log('A user disconnected');
     });
   });
 };

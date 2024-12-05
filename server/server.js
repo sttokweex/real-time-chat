@@ -20,10 +20,9 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  path: '/socket.io', // Specify the path for Socket.io
+   path: '/socket.io',
 });
 
-// Middleware setup
 app.use(
   cors({
     origin: [clientUrl, 'http://localhost'],
@@ -33,28 +32,19 @@ app.use(
 );
 
 app.use(cookieParser());
+
 app.use(bodyParser.json({ strict: false }));
 app.use('/', routes);
 
-// Start the server and sync the database
 (async () => {
   try {
     await sequelize.sync();
     console.log('Database synced successfully.');
 
-    server.listen(3001, '0.0.0.0', () => {
-      console.log('Server is running on http://79.141.65.250:3001'); // Log server start
-    });
+    server.listen(3001, '0.0.0.0', () => {});
   } catch (error) {
     console.error('Error syncing database:', error);
   }
 })();
 
-// Initialize socket handlers and log socket creation
 socketHandlers(io);
-console.log('Socket handlers initialized'); // Log when socket handlers are set up
-
-// Log when a new socket connection is established (this will be handled in socketHandlers)
-io.on('connection', (socket) => {
-  console.log(`New socket connected: ${socket.id}`); // Log each new socket connection
-});
