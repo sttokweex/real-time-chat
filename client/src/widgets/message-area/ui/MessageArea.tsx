@@ -1,5 +1,5 @@
 import { MessageInput, MessageList } from '@/features/messages';
-import { Message } from '@/shared/type';
+import { Message } from '../../../shared/types';
 
 interface MessageAreaProps {
   messages: Message[];

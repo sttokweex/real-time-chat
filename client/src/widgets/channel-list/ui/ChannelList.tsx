@@ -6,7 +6,7 @@ import {
   CreateChannelModal,
   FindChannelsButton,
 } from '@/features/channels';
-import { User } from '@/shared/type';
+import { User } from '../../../shared/types';
 
 interface Channel {
   id: string;

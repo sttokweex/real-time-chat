@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from '@/shared/type/index';
+import { Message } from '../../../shared/types';
 
 interface MessageListProps {
   messages: Message[];
