@@ -5,7 +5,7 @@ import authMiddleware from '../middleware/auth-middleware.js';
 
 const router = Router();
 
-router.get('/api/channels', authMiddleware, async (req, res) => {
+router.get('/channels', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -41,12 +41,12 @@ router.get('/api/channels', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/api/registration', authController.registration);
+router.post('/registration', authController.registration);
 
-router.post('/api/login', authController.login);
+router.post('/login', authController.login);
 
-router.post('/api/logout', authController.logout);
+router.post('/logout', authController.logout);
 
-router.get('/api/refresh', authController.refresh);
+router.get('/refresh', authController.refresh);
 
 export default router;
