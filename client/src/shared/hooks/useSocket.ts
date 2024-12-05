@@ -27,11 +27,14 @@ const useSocket = (socketUrl: string, userData: User) => {
   useEffect(() => {
     if (!socketRef.current) {
       socketRef.current = io(socketUrl);
+      console.log('Socket connected:', socketUrl); // Log when socket connects
     }
 
     const socket = socketRef.current;
 
     socket.emit('setUser', userData.id);
+    console.log('User set:', userData.id); // Log user ID when setting
+
     fetchChannels();
 
     socket.on('userKicked', handleUserKicked);
@@ -50,6 +53,7 @@ const useSocket = (socketUrl: string, userData: User) => {
       socket.off('updateChannelUsers', handleUpdateChannelUsers);
 
       if (socket) {
+        console.log('Disconnecting socket'); // Log before disconnecting
         socket.disconnect();
         socketRef.current = null;
       }
@@ -91,10 +95,12 @@ const useSocket = (socketUrl: string, userData: User) => {
     setMessages([]);
     localStorage.setItem('currentChannel', channelName);
 
+    console.log(`Joining channel: ${channelName} for user ID: ${userId}`); // Log channel joining
     socketRef.current?.emit('joinChannel', { channelName, userId });
   };
 
   const changeChannel = (oldChannelName: string) => {
+    console.log(`Changing channel from ${oldChannelName}`); // Log channel change
     socketRef.current?.emit('changeChannel', oldChannelName);
   };
 
@@ -103,6 +109,7 @@ const useSocket = (socketUrl: string, userData: User) => {
     deletedUsername: string,
     userCreatorId: string,
   ) => {
+    console.log(`Deleting user ${deletedUsername} from channel ${channelName}`); // Log user deletion
     socketRef.current?.emit('removeUserFromChannel', {
       channelName,
       deletedUsername,
@@ -112,16 +119,20 @@ const useSocket = (socketUrl: string, userData: User) => {
 
   const sendMessage = (messageInput: string) => {
     if (messageInput && currentChannel) {
+      console.log(`Sending message to ${currentChannel}: ${messageInput}`); // Log message sending
       socketRef.current?.emit('sendMessage', {
         channelName: currentChannel,
         message: messageInput,
         userId: userData.id,
       });
+    } else {
+      console.warn('Message input is empty or no current channel'); // Warn if no message or channel
     }
   };
 
   const createChannel = (newChannelName: string) => {
     if (newChannelName) {
+      console.log(`Creating new channel: ${newChannelName}`); // Log new channel creation
       socketRef.current?.emit('createChannel', {
         name: newChannelName,
         creatorId: userData.id,
@@ -130,6 +141,7 @@ const useSocket = (socketUrl: string, userData: User) => {
   };
 
   const handleUserKicked = (channelName: string) => {
+    console.log(`User kicked from channel: ${channelName}`); // Log when a user is kicked
     if (channelName === localStorage.getItem('currentChannel')) {
       setMessages([]);
       setActiveUsers([]);
@@ -147,20 +159,24 @@ const useSocket = (socketUrl: string, userData: User) => {
   };
 
   const handleUserRemoved = (deletedUsername: string) => {
+    console.log(`User removed: ${deletedUsername}`); // Log when a user is removed
     setActiveUsers((prevActiveUsers) =>
       prevActiveUsers.filter((username) => username !== deletedUsername),
     );
   };
 
   const handleReceiveMessage = (message: Message) => {
+    console.log(`Message received in ${currentChannel}:`, message); // Log received messages
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
   const handleLoadMessages = (loadedMessages: Message[]) => {
+    console.log(`Loading messages for ${currentChannel}:`, loadedMessages); // Log loaded messages
     setMessages(loadedMessages);
   };
 
   const handleChannelCreated = (newChannel: ChannelResponse) => {
+    console.log(`New channel created: ${newChannel.name}`); // Log new channels created
     const role = newChannel.creatorId === userData.id ? 'admin' : 'unstated';
 
     if (newChannel.creatorId === userData.id) {
@@ -177,6 +193,7 @@ const useSocket = (socketUrl: string, userData: User) => {
   };
 
   const handleUpdateChannelUsers = (usernames: string[]) => {
+    console.log(`Updating active users in the current channel:` , usernames); // Log active users update
     setActiveUsers(usernames);
   };
 
