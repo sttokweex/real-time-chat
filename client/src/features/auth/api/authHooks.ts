@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { AuthResponse, Refetch } from '@/shared/types';
 
-const API_URL = `http://79.141.65.250/api`;
+const API_URL = `http://79.141.65.250:3001/api`;
 
 const apiAuth = axios.create({
   baseURL: API_URL,
