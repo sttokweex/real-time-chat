@@ -24,7 +24,7 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: clientUrl,
+    origin: [clientUrl, "http://79.141.65.250"],
     methods: ['GET', 'POST'],
     credentials: true,
   }),
