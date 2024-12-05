@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AuthResponse } from '../types';
 
-const API_URL = `http://79.141.65.250:3001/api`;
+const API_URL = `http://79.141.65.250/api`;
 
 const api = axios.create({
   baseURL: API_URL,

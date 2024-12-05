@@ -38,8 +38,6 @@ services:
       CLIENT_URL: ${CLIENT_URL}
     container_name: server-chat
     restart: always
-    ports:
-      - "3001:3001"
     volumes:
       - ./server:/usr/src/app  
       - /usr/src/app/node_modules  
@@ -52,8 +50,6 @@ services:
       dockerfile: Dockerfile  
     container_name: client-chat
     restart: always
-    ports:
-      - "3000:3000"
     volumes:
       - ./client:/app  
       - /app/node_modules  

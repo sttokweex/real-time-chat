@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { checkAccess } from './checkAcces';
 
-const API_URL = `http://79.141.65.250:3001/api`;
+const API_URL = `http://79.141.65.250/api`;
 
 const apiClient = axios.create({
   baseURL: API_URL,
