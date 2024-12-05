@@ -3,7 +3,7 @@ import { AuthResponse } from '../types';
 
 const refreshToken = async (): Promise<AuthResponse> => {
   try {
-    const response = await axios.get<AuthResponse>(`/refresh`);
+    const response = await axios.get<AuthResponse>(`http://79.141.65.250:3001/api/refresh`);
     const data = response.data;
 
     localStorage.setItem(
