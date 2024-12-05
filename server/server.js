@@ -11,7 +11,7 @@ import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
-const clientUrl = process.env.CLIENT_URL || 'http://79.141.65.250:3000';
+const clientUrl = 'http://79.141.65.250:3000';
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
