@@ -37,7 +37,7 @@ app.use('/', routes);
 
 (async () => {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     console.log('Database synced successfully.');
 
     server.listen(3001, '0.0.0.0', () => {});
