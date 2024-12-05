@@ -96,7 +96,7 @@ class AuthController {
 
   async logout(req, res) {
     try {
-      console.log('qweeqw');
+  
       const { refreshToken } = req.cookies;
 
       if (!refreshToken) {
