@@ -1,5 +1,8 @@
 version: '3.8'  # Optional, but can be included for clarity
 
+networks:
+  pg_network:
+
 services:
   nginx:
     image: nginx:latest
@@ -60,5 +63,3 @@ volumes:
   postgres_data:
   node_modules: {}  
 
-networks:
-  pg_network:
