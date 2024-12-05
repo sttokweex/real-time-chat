@@ -12,7 +12,7 @@ interface ChatPageProps {
 }
 
 const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
-  const socketUrl = import.meta.env.VITE_SERVER_PORT;
+  const socketUrl = 'http://79.141.65.250:3001';
 
   const {
     channels,
