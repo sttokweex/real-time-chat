@@ -12,7 +12,7 @@ interface ChatPageProps {
 }
 
 const ChatPage: React.FC<ChatPageProps> = ({ userData, refetch }) => {
-const socketUrl = 'http://79.141.65.250/socket.io';
+const socketUrl = 'http://79.141.65.250/api/socket.io';
 
   const {
     channels,
