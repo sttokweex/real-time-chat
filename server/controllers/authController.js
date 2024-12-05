@@ -39,7 +39,7 @@ class AuthController {
       res.cookie('refreshToken', tokens.refreshToken, {
         maxAge: secret.cookie_max_age,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
         sameSite: 'Lax',
       });
 
@@ -79,7 +79,7 @@ class AuthController {
       res.cookie('refreshToken', tokens.refreshToken, {
         maxAge: secret.cookie_max_age,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
         sameSite: 'Lax',
       });
 
@@ -146,7 +146,7 @@ class AuthController {
       res.cookie('refreshToken', tokens.refreshToken, {
         maxAge: secret.cookie_max_age,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
         sameSite: 'Lax',
       });
 
